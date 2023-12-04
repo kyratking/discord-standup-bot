@@ -5,3 +5,5 @@ node_modules
 serviceAccount.json
 
 channels.json
+
+test.js
