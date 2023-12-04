@@ -71,7 +71,3 @@ client.on(Events.Error, (error) => {
 });
 
 client.login(process.env.DISCORD_TOKEN);
-
-const hello = () => console.log("Hello world");
-
-module.exports = hello;
