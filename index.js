@@ -8,6 +8,8 @@ const {
 } = require("./sheets");
 require("dotenv").config();
 
+console.log("Enviornment variables", JSON.stringify(process.env, null, 2));
+
 const guildToTrack = process.env.GUILD_TO_TRACK;
 const categoryToTrack = process.env.CATEGORY_TO_TRACK || "standups";
 
@@ -71,3 +73,7 @@ client.on(Events.Error, (error) => {
 });
 
 client.login(process.env.DISCORD_TOKEN);
+
+const hello = () => console.log("Hello world");
+
+module.exports = { hello };
