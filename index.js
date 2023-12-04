@@ -1,7 +1,12 @@
 const { Client, Events, ChannelType } = require("discord.js");
 const { greet, sendError } = require("./utils");
+const {
+  existsOrCreateSheet,
+  appendStandup,
+  markDeleted,
+  updateContent,
+} = require("./sheets");
 require("dotenv").config();
-const fs = require("fs");
 
 const guildToTrack = process.env.GUILD_TO_TRACK;
 const categoryToTrack = process.env.CATEGORY_TO_TRACK || "standups";
@@ -33,22 +38,31 @@ client.on("ready", () => {
   );
 });
 
-client.addListener(Events.MessageCreate, (message) => {
-  const { author, content, channelId, nonce } = message;
+client.addListener(Events.MessageCreate, async (message) => {
+  const { author, content, channelId, nonce, createdTimestamp } = message;
   if (!allowedChannelIds.includes(channelId)) return;
   const { username, globalName } = author;
+  await existsOrCreateSheet(username);
+  await appendStandup(username, content, nonce, createdTimestamp);
   console.log(
     `Saved a standup by ${globalName}. Content ${content}, nonce ${nonce}`
   );
 });
 
-client.on("message", async (message) => {
-  console.log(JSON.stringify(message, null, 2));
+client.addListener(Events.MessageUpdate, async (oldMessage, newMessage) => {
+  const { author, content, channelId, nonce } = newMessage;
+  if (!allowedChannelIds.includes(channelId)) return;
+  const { username } = author;
+  await updateContent(username, content, nonce);
+  console.log(`Updated a standup with nonce ${nonce} for ${username}`);
 });
 
-client.addListener(Events.MessageDelete, (message) => {
-  const { nonce } = message;
-  console.log(`Deleted a standup with nonce ${nonce}`);
+client.addListener(Events.MessageDelete, async (message) => {
+  const { author, channelId, nonce } = message;
+  if (!allowedChannelIds.includes(channelId)) return;
+  const { username } = author;
+  await markDeleted(username, nonce);
+  console.log(`Deleted a standup with nonce ${nonce} for ${username}`);
 });
 
 client.on(Events.Error, (error) => {
