@@ -1,27 +1,27 @@
-const axios = require("axios");
+const axios = require('axios');
 
-const greet = () => console.log("Successfully connected to Discord");
+const greet = () => console.log('Successfully connected to Discord');
 
 const sendError = (title, error) => {
   const axiosConfig = {
-    method: "post",
+    method: 'post',
     maxBodyLength: Infinity,
-    url: process.env.REPORTING_WEBHOOK || "",
+    url: process.env.REPORTING_WEBHOOK || '',
     data: {
       content: null,
       embeds: [
         {
           title,
           description:
-            "Something went wrong. Please check the logs for more information.",
+            'Something went wrong. Please check the logs for more information.',
           color: 16515072,
           fields: [
             {
-              name: "Error",
+              name: 'Error',
               value:
-                "```" +
+                '```' +
                 JSON.stringify(error, Object.getOwnPropertyNames(error)) +
-                "```",
+                '```',
             },
           ],
         },
@@ -32,7 +32,7 @@ const sendError = (title, error) => {
   try {
     axios(axiosConfig);
   } catch (error) {
-    console.error(`Error sending error to Discord: ${error}`);
+    console.error(`Error sending error to Discord: ${error.response.data}`);
   }
 };
 

@@ -1,23 +1,23 @@
-const { Client, Events, ChannelType } = require("discord.js");
-const { greet, sendError } = require("./utils");
+const { Client, Events, ChannelType } = require('discord.js');
+const { greet, sendError } = require('./utils');
 const {
   existsOrCreateSheet,
   appendStandup,
   markDeleted,
   updateContent,
-} = require("./sheets");
-require("dotenv").config();
+} = require('./sheets');
+require('dotenv').config();
 
 const guildToTrack = process.env.GUILD_TO_TRACK;
-const categoryToTrack = process.env.CATEGORY_TO_TRACK || "standups";
+const categoryToTrack = process.env.CATEGORY_TO_TRACK || 'standups';
 
 const client = new Client({
-  intents: ["Guilds", "GuildMessages", "MessageContent"],
+  intents: ['Guilds', 'GuildMessages', 'MessageContent'],
 });
 
 const allowedChannelIds = [];
 
-client.on("ready", () => {
+client.on('ready', () => {
   greet();
   const category = client.channels.cache.find(
     (channel) =>
@@ -33,7 +33,7 @@ client.on("ready", () => {
     allowedChannelIds.push(channel.id)
   );
   console.log(
-    "Allowing messages to be accepted from following channel IDs",
+    'Allowing messages to be accepted from following channel IDs',
     allowedChannelIds
   );
 });
@@ -65,9 +65,21 @@ client.addListener(Events.MessageDelete, async (message) => {
   console.log(`Deleted a standup with nonce ${nonce} for ${username}`);
 });
 
+client.on(Events.ShardDisconnect, () => {
+  console.error('Shard Disconnect in Stand-Up Bot');
+});
+
+client.on(Events.ShardError, () => {
+  console.error('Shard Error in Stand-Up Bot');
+});
+
+client.on(Events.ShardReady, (id) => {
+  console.log(`Shard ${id} is ready`);
+});
+
 client.on(Events.Error, (error) => {
   console.error(error);
-  sendError("Error in Stand-Up Bot", error);
+  sendError('Error in Stand-Up Bot', error);
 });
 
 client.login(process.env.DISCORD_TOKEN);
