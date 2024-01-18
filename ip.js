@@ -91,7 +91,6 @@ const saveMessage = (message) => {
       console.log(error);
     });
 };
-getIp();
 
 //run every hour
 cron.schedule('0 * * * *', () => {
