@@ -1,4 +1,5 @@
 const { exec } = require("child_process");
+const { Client, Events, ChannelType } = require('discord.js');
 const axios = require("axios");
 require('dotenv').config();
 const cron = require('node-cron');
@@ -92,7 +93,51 @@ const saveMessage = (message) => {
     });
 };
 
+const notifyUser = async () => {
+  let data = JSON.stringify({
+    content: "Hold tight guys, I am checking the IP addresses.",
+  });
+
+  let config = {
+    method: "post",
+    maxBodyLength: Infinity,
+    url: "https://discord.com/api/v10/channels/1197488531598233650/messages",
+    headers: {
+      Accept: "application/json",
+      Authorization:
+        `Bot ${process.env.DISCORD_TOKEN}`,
+        "Content-Type": "application/json",
+    },
+    data: data,
+  };
+
+  return axios
+    .request(config)
+    .then((response) => {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
 //run every hour
 cron.schedule('0 * * * *', () => {
   getIp();
 })
+
+const allowedChannelIds = ['1197488531598233650'];
+
+const client = new Client({
+  intents: ['Guilds', 'GuildMessages', 'MessageContent'],
+});
+
+client.addListener(Events.MessageCreate, async (message) => {
+  const { channelId, content } = message;
+  if (!allowedChannelIds.includes(channelId)) return;
+  if(content == 'Hold tight guys, I am checking the IP addresses.') return;
+  notifyUser();
+  getIp();
+});
+
+client.login(process.env.DISCORD_TOKEN);
