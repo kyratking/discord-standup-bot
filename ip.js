@@ -137,7 +137,8 @@ client.addListener(Events.MessageCreate, async (message) => {
   if (!allowedChannelIds.includes(channelId)) return;
   if(content == 'Hold tight guys, I am checking the IP addresses.') return;
   notifyUser();
-  getIp();
+  exec('pm2 restart 0')
 });
+getIp();
 
 client.login(process.env.DISCORD_TOKEN);
