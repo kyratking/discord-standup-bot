@@ -73,7 +73,7 @@ const saveMessage = (message) => {
   let config = {
     method: "patch",
     maxBodyLength: Infinity,
-    url: "https://discord.com/api/v10/channels/1197488531598233650/messages/1197512544391278663",
+    url: "https://discord.com/api/v10/channels/1197488531598233650/messages",
     headers: {
       Accept: "application/json",
       Authorization:
