@@ -135,7 +135,7 @@ const client = new Client({
 client.addListener(Events.MessageCreate, async (message) => {
   const { channelId, content } = message;
   if (!allowedChannelIds.includes(channelId)) return;
-  if(content == 'Hold tight guys, I am checking the IP addresses.') return;
+  if(content == 'Hold tight guys, I am checking the IP addresses.' || content.includes('192.168')) return;
   notifyUser();
   exec('pm2 restart 0')
 });
